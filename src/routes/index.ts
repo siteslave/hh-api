@@ -12,6 +12,11 @@ router.get('/', (req: Request, res: Response) => {
   res.send({ ok: true, message: 'Welcome to RESTful api server!', code: HttpStatus.OK });
 });
 
+router.get('/test-mqtt', (req: Request, res: Response) => {
+  req.mqttClient.publish('request/notify', 'new request', { qos: 0, retain: false });
+  res.send({ ok: true });
+});
+
 router.get('/gen-token', async (req: Request, res: Response) => {
 
   try {

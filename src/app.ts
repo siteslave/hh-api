@@ -1,6 +1,7 @@
 /// <reference path="../typings.d.ts" />
 
 require('dotenv').config();
+var mqtt = require('mqtt');
 
 import * as path from 'path';
 import * as logger from 'morgan';
@@ -66,6 +67,18 @@ let db = Knex({
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   req.db = db;
+  next();
+});
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const client = mqtt.connect(`mqtt://${process.env.MQTT_HOST}`, {
+    clientId: 'q4u_api_client-' + Math.floor(Math.random() * 1000000),
+    username: process.env.MQTT_USER,
+    password: process.env.MQTT_PASSWORD
+  });
+
+  req.mqttClient = client;
+
   next();
 });
 
