@@ -5,6 +5,7 @@ import { Jwt } from '../models/jwt';
 import { UserModel } from '../models/user';
 
 import * as HttpStatus from 'http-status-codes';
+import { NextFunction } from 'connect';
 
 const jwt = new Jwt();
 const userModel = new UserModel();
@@ -34,6 +35,22 @@ router.post('/save', async (req: Request, res: Response) => {
     }
   } else {
     res.send({ ok: false, message: 'ข้อมูลไม่ครบ' });
+  }
+
+});
+
+router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
+  var pincode = req.body.pincode;
+  var cid = req.body.cid;
+
+  if (pincode && cid) {
+    try {
+      var rs: any = await userModel.checkPincode(req.db, cid, pincode);
+    } catch (error) {
+      res.send({ ok: false, message: error.message })
+    }
+  } else {
+    res.send({ ok: false, message: 'ข้อมูลไม่ครบ' })
   }
 
 });

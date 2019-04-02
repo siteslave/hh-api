@@ -7,4 +7,10 @@ export class UserModel {
       .insert(data);
   }
 
+  checkPincode(db: Knex, cid: any, pincode: any) {
+    return db('register')
+      .where('cid', cid)
+      .where('pincode', pincode);
+  }
+
 }
