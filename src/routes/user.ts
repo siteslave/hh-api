@@ -39,6 +39,7 @@ router.post('/save', async (req: Request, res: Response) => {
 
 });
 
+// localhost:3000/user/login
 router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
   var pincode = req.body.pincode;
   var cid = req.body.cid;
@@ -54,6 +55,7 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
         }
 
         var token = await jwt.sign(payload);
+        req.mqttClient.publish('request/notify', 'new request', { qos: 0, retain: false });
         res.send({ ok: true, token: token });
 
       } else {
