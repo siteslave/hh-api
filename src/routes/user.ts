@@ -46,6 +46,19 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
   if (pincode && cid) {
     try {
       var rs: any = await userModel.checkPincode(req.db, cid, pincode);
+      if (rs.length) {
+        var registerId = rs[0].register_id;
+
+        var payload = {
+          registerId: registerId
+        }
+
+        var token = await jwt.sign(payload);
+        res.send({ ok: true, token: token });
+
+      } else {
+        res.send({ ok: false, message: 'Login failed!' })
+      }
     } catch (error) {
       res.send({ ok: false, message: error.message })
     }
