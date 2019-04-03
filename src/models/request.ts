@@ -21,7 +21,8 @@ export class RequestModel {
         'p.sex',
         'p.birthdate'
       )
-      .innerJoin('patient as p', 'p.cid', 'r.cid')
+      .innerJoin('register as rx', 'rx.register_id', 'r.register_id')
+      .innerJoin('patient as p', 'p.cid', 'rx.cid')
       .orderByRaw('r.request_date, r.request_time DESC')
   }
 

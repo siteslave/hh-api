@@ -39,6 +39,7 @@ router.post('/', async (req: Request, res: Response) => {
   data.register_id = id;
   data.request_date = requestDate;
   data.request_time = requestTime;
+  data.status = 1;
 
   try {
     await requestModel.saveRequest(req.db, data);
