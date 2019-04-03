@@ -26,6 +26,9 @@ router.post('/', async (req: Request, res: Response) => {
   let symptom = req.body.symptom;
   let lat = req.body.lat;
   let lng = req.body.lng;
+
+  let id = req.decoded.id;
+
   let requestDate = moment().format('YYYY-MM-DD');
   let requestTime = moment().format('HH:mm:ss');
 
@@ -33,6 +36,7 @@ router.post('/', async (req: Request, res: Response) => {
   data.symptom = symptom;
   data.lat = lat;
   data.lng = lng;
+  data.register_id = id;
   data.request_date = requestDate;
   data.request_time = requestTime;
 
