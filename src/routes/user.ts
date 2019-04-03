@@ -51,11 +51,10 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
         var registerId = rs[0].register_id;
 
         var payload = {
-          registerId: registerId
+          id: registerId
         }
 
         var token = await jwt.sign(payload);
-        req.mqttClient.publish('request/notify', 'new request', { qos: 0, retain: false });
         res.send({ ok: true, token: token });
 
       } else {
