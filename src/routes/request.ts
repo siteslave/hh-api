@@ -21,6 +21,20 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+router.get('/status', async (req: Request, res: Response) => {
+  try {
+    var registerId = req.decoded.id;
+
+    var rs: any = await requestModel.getRequestStatus(req.db, registerId);
+    var status = rs.length ? rs[0].status : 0;
+
+    res.send({ ok: true, status: status, registerId: registerId });
+  } catch (error) {
+    console.log(error);
+    res.send({ ok: false, message: error.message });
+  }
+});
+
 // save new request
 router.post('/', async (req: Request, res: Response) => {
   let symptom = req.body.symptom;

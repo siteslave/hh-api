@@ -7,6 +7,13 @@ export class RequestModel {
       .insert(data);
   }
 
+  getRequestStatus(db: Knex, registerId: any) {
+    return db('request')
+      .where('register_id', registerId)
+      .orderBy('request_id', 'DESC')
+      .limit(1);
+  }
+
   getRequest(db: Knex) {
     return db('request as r')
       .select(
