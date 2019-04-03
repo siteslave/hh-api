@@ -11,27 +11,34 @@ import { RequestModel } from '../models/request';
 const requestModel = new RequestModel();
 const router: Router = Router();
 
-router.get('/request', (req: Request, res: Response) => {
-  res.send({ ok: true, message: 'Welcome to Api Server!', code: HttpStatus.OK });
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    var rs: any = await requestModel.getRequest(req.db);
+    res.send({ ok: true, rows: rs });
+  } catch (error) {
+    console.log(error);
+    res.send({ ok: false, message: error.message });
+  }
 });
 
 // save new request
-router.post('/request', async (req: Request, res: Response) => {
-  let code = moment().format('x');
-  let cause = req.body.cause;
-  let customerId = req.decoded.id;
+router.post('/', async (req: Request, res: Response) => {
+  let symptom = req.body.symptom;
+  let lat = req.body.lat;
+  let lng = req.body.lng;
   let requestDate = moment().format('YYYY-MM-DD');
   let requestTime = moment().format('HH:mm:ss');
 
   let data: any = {};
-  data.request_code = code;
-  data.request_cause = cause;
-  data.customer_id = customerId;
+  data.symptom = symptom;
+  data.lat = lat;
+  data.lng = lng;
   data.request_date = requestDate;
   data.request_time = requestTime;
 
   try {
     await requestModel.saveRequest(req.db, data);
+    req.mqttClient.publish('request/notify', 'new request', { qos: 0, retain: false });
     res.send({ ok: true, code: HttpStatus.OK });
   } catch (error) {
     res.send({ ok: false, error: error.message, code: HttpStatus.OK });

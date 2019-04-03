@@ -22,6 +22,7 @@ export class RequestModel {
         'p.birthdate'
       )
       .innerJoin('patient as p', 'p.cid', 'r.cid')
+      .orderByRaw('r.request_date, r.request_time DESC')
   }
 
 }
