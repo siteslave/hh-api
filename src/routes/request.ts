@@ -66,7 +66,6 @@ router.put('/status/:registerId/:requestId', async (req: Request, res: Response)
       }
     });
 
-
     var rs: any = await userModel.getDeviceToken(req.db, registerId);
     var deviceToken = rs.length ? rs[0].device_token : null;
 
