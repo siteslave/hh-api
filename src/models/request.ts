@@ -14,6 +14,12 @@ export class RequestModel {
       .limit(1);
   }
 
+  updateStatus(db: Knex, requestId: any, status: any) {
+    return db('request')
+      .where('request_id', requestId)
+      .update({ status: status });
+  }
+
   getRequest(db: Knex) {
     return db('request as r')
       .select(

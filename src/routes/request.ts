@@ -35,6 +35,25 @@ router.get('/status', async (req: Request, res: Response) => {
   }
 });
 
+// localhost:3000/request/status/1/8
+router.put('/status/:registerId/:requestId', async (req: Request, res: Response) => {
+  try {
+    var status = req.body.status;
+    var registerId = req.params.registerId;
+    var requestId = req.params.requestId;
+
+    await requestModel.updateStatus(req.db, requestId, status);
+
+    var topic = `request/status/${registerId}`;
+    req.mqttClient.publish(topic, 'update status', { qos: 0, retain: false });
+    res.send({ ok: true });
+
+  } catch (error) {
+    console.log(error);
+    res.send({ ok: false, message: error.message });
+  }
+});
+
 // save new request
 router.post('/', async (req: Request, res: Response) => {
   let symptom = req.body.symptom;
