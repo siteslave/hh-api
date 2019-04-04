@@ -43,6 +43,7 @@ router.post('/save', async (req: Request, res: Response) => {
 router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
   var pincode = req.body.pincode;
   var cid = req.body.cid;
+  var deviceToken = req.body.deviceToken || null;
 
   if (pincode && cid) {
     try {
@@ -52,6 +53,10 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
 
         var payload = {
           id: registerId
+        }
+
+        if (deviceToken) {
+          await userModel.updateDeviceToken(req.db, cid, deviceToken);
         }
 
         var token = await jwt.sign(payload);

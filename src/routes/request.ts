@@ -7,9 +7,13 @@ import * as express from 'express';
 import { Router, Request, Response } from 'express';
 
 import { RequestModel } from '../models/request';
+import { UserModel } from '../models/user';
 
+const userModel = new UserModel();
 const requestModel = new RequestModel();
 const router: Router = Router();
+
+const gcm = require('node-gcm');
 
 router.get('/', async (req: Request, res: Response) => {
   try {
@@ -38,11 +42,42 @@ router.get('/status', async (req: Request, res: Response) => {
 // localhost:3000/request/status/1/8
 router.put('/status/:registerId/:requestId', async (req: Request, res: Response) => {
   try {
+
+    var sender = new gcm.Sender(process.env.FCM_KEY);
+
     var status = req.body.status;
     var registerId = req.params.registerId;
     var requestId = req.params.requestId;
 
     await requestModel.updateStatus(req.db, requestId, status);
+
+    var statusMessage = status === '1' ? 'รอการตรวจสอบ'
+      : status === '2' ? 'ตรวจสอบแล้ว'
+        : status === '0' ? 'ถูกยกเลิก'
+          : status === '5' ? 'เสร็จสิ้นการให้บริการ'
+            : 'ไม่ทราบสถานะ';
+
+    var message = new gcm.Message({
+      contentAvailable: true,
+      notification: {
+        sound: 'default',
+        title: "HELPING HAND",
+        body: "คำขอของคุณอยู่ในสถานะ " + statusMessage
+      }
+    });
+
+
+    var rs: any = await userModel.getDeviceToken(req.db, registerId);
+    var deviceToken = rs.length ? rs[0].device_token : null;
+
+    if (deviceToken) {
+      var regTokens = [deviceToken];
+
+      sender.send(message, { registrationTokens: regTokens }, function (err, response) {
+        if (err) console.error(err);
+        else console.log(response);
+      });
+    }
 
     var topic = `request/status/${registerId}`;
     req.mqttClient.publish(topic, 'update status', { qos: 0, retain: false });
