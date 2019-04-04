@@ -27,6 +27,8 @@ export class RequestModel {
         'r.request_time',
         'r.status',
         'r.symptom',
+        'r.request_id',
+        'r.register_id',
         'p.cid',
         'p.hn',
         'p.first_name',
