@@ -118,4 +118,33 @@ router.post('/', async (req: Request, res: Response) => {
 
 });
 
+// update request
+router.post('/update-latlng', async (req: Request, res: Response) => {
+  let lat = req.body.lat;
+  let lng = req.body.lng;
+
+  let registerId = req.decoded.id;
+
+  let data: any = {};
+  data.lat = lat;
+  data.lng = lng;
+
+  try {
+
+    var rs: any = await requestModel.getRequestStatus(req.db, registerId);
+    var requestId = rs.length ? rs[0].request_id : null;
+
+    if (requestId) {
+      await requestModel.updateLatLng(req.db, requestId, data);
+      res.send({ ok: true, code: HttpStatus.OK });
+    } else {
+      res.send({ ok: false, message: 'ไม่พบรายการที่ต้องการอัปเดท' });
+    }
+
+  } catch (error) {
+    res.send({ ok: false, error: error.message, code: HttpStatus.OK });
+  }
+
+});
+
 export default router;

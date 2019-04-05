@@ -20,6 +20,12 @@ export class RequestModel {
       .update({ status: status });
   }
 
+  updateLatLng(db: Knex, requestId: any, data: any) {
+    return db('request')
+      .where('request_id', requestId)
+      .update(data);
+  }
+
   getRequest(db: Knex) {
     return db('request as r')
       .select(
@@ -29,6 +35,8 @@ export class RequestModel {
         'r.symptom',
         'r.request_id',
         'r.register_id',
+        'r.lat',
+        'r.lng',
         'p.cid',
         'p.hn',
         'p.first_name',
